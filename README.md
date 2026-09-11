@@ -60,7 +60,7 @@ El sistema implementa de forma íntegra los requerimientos funcionales derivados
 
 
 🔗 Enlace de Acceso
-(https://smart-bay-manager-talma.streamlit.app)
+(https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/)
 
 
 
