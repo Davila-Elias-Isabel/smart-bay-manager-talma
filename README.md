@@ -1,0 +1,1 @@
+# smart-bay-manager-talma
