@@ -58,6 +58,12 @@ El sistema implementa de forma íntegra los requerimientos funcionales derivados
 
 ---
 
+
+🔗 Enlace de Acceso
+(https://smart-bay-manager-talma.streamlit.app)
+
+
+
 ## Estructura del Repositorio
 
 ```text
