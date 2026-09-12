@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
+import os
 
 # Configuración del documento web
 st.set_page_config(
@@ -11,68 +13,32 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# ESTILOS CSS PERSONALIZADOS (PALETA OFICIAL TALMA: #012b6c y #7ead3e)
+# PERSISTENCIA DE DATOS (JSON)
 # -------------------------------------------------------------
-st.markdown("""
-<style>
-    /* Botones primarios */
-    div.stButton > button[kind="primary"] {
-        background-color: #7ead3e !important;
-        border-color: #7ead3e !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        border-radius: 6px;
-    }
-    div.stButton > button[kind="primary"]:hover {
-        background-color: #6c9934 !important;
-        border-color: #6c9934 !important;
-    }
-    
-    /* Barra lateral */
-    [data-testid="stSidebar"] {
-        background-color: #012b6c !important;
-    }
-    [data-testid="stSidebar"] * {
-        color: #ffffff !important;
-    }
-    [data-testid="stSidebar"] .stRadio label {
-        color: #f1f5f9 !important;
-        font-weight: 500;
-    }
+DATA_FILE = "smart_bay_data.json"
 
-    /* Tarjetas de Bahías */
-    .bay-card {
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 14px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-        border: 1px solid #e2e8f0;
+def load_data():
+    """Carga los datos desde el archivo JSON si existe."""
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            st.session_state.bahias = data.get("bahias", st.session_state.bahias)
+            st.session_state.equipos_pendientes = data.get("equipos_pendientes", st.session_state.equipos_pendientes)
+            st.session_state.usuarios = data.get("usuarios", st.session_state.usuarios)
+            st.session_state.historial = data.get("historial", st.session_state.historial)
+            st.session_state.umbrales_alerta = data.get("umbrales_alerta", st.session_state.umbrales_alerta)
+
+def save_data():
+    """Guarda los datos actuales en el archivo JSON."""
+    data = {
+        "bahias": st.session_state.bahias,
+        "equipos_pendientes": st.session_state.equipos_pendientes,
+        "usuarios": st.session_state.usuarios,
+        "historial": st.session_state.historial,
+        "umbrales_alerta": st.session_state.umbrales_alerta
     }
-    .bay-libre {
-        border-left: 6px solid #7ead3e !important;
-    }
-    .bay-ocupada {
-        border-left: 6px solid #dc2626 !important;
-    }
-    .badge-libre {
-        background-color: #7ead3e;
-        color: #ffffff;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-weight: 700;
-        font-size: 0.8rem;
-    }
-    .badge-ocupada {
-        background-color: #dc2626;
-        color: #ffffff;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-weight: 700;
-        font-size: 0.8rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 # -------------------------------------------------------------
 # 1. ESTADO GLOBAL (SESSION STATE)
@@ -125,8 +91,70 @@ if "historial" not in st.session_state:
         {"timestamp": "2026-09-11 07:45", "evento": "Ingreso Equipo", "bahia": "BAY-LCR-01", "equipo": "CB-305", "taller": "Taller Lote Carguero", "usuario": "Jorge Salinas"}
     ]
 
+# Cargar datos persistentes si existen
+load_data()
+
 # -------------------------------------------------------------
-# LOGO CORPORATIVO TALMA (SVG VECTORIAL DIRECTO)
+# ESTILOS CSS PERSONALIZADOS
+# -------------------------------------------------------------
+st.markdown("""
+<style>
+    div.stButton > button[kind="primary"] {
+        background-color: #7ead3e !important;
+        border-color: #7ead3e !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        border-radius: 6px;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #6c9934 !important;
+        border-color: #6c9934 !important;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #012b6c !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+    [data-testid="stSidebar"] .stRadio label {
+        color: #f1f5f9 !important;
+        font-weight: 500;
+    }
+    .bay-card {
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 14px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+    .bay-libre {
+        border-left: 6px solid #7ead3e !important;
+    }
+    .bay-ocupada {
+        border-left: 6px solid #dc2626 !important;
+    }
+    .badge-libre {
+        background-color: #7ead3e;
+        color: #ffffff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+    .badge-ocupada {
+        background-color: #dc2626;
+        color: #ffffff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------------------------------------------------
+# LOGO CORPORATIVO TALMA
 # -------------------------------------------------------------
 logo_talma_html = """
 <div style="text-align: center; padding: 15px 0 10px 0;">
@@ -156,7 +184,9 @@ if not st.session_state.sesion_activa:
     with col_l1:
         st.subheader("Acceso al Sistema (CU-01)")
         username = st.selectbox("Seleccione Usuario para Demostración", list(st.session_state.usuarios.keys()))
-        password = st.text_input("Contraseña", type="password", value=st.session_state.usuarios[username]["pass"])
+        
+        # CORRECCIÓN DE SEGURIDAD: No pre-llenar la contraseña
+        password = st.text_input("Contraseña", type="password")
         
         if st.button("Iniciar Sesión", type="primary", use_container_width=True):
             user_data = st.session_state.usuarios[username]
@@ -211,13 +241,11 @@ if menu == "📊 Tablero de Disponibilidad (CU-02)":
     </div>
     """, unsafe_allow_html=True)
 
-    # Banner de alertas automáticas
     for taller, umbral in st.session_state.umbrales_alerta.items():
         libres = sum(1 for b in st.session_state.bahias if b["taller"] == taller and b["estado"] == "Libre")
         if libres <= umbral:
             st.error(f"🚨 **ALERTA CRÍTICA DE CAPACIDAD ({taller.upper()}):** Solo quedan {libres} bahía(s) disponible(s). Umbral fijado: {umbral}.")
 
-    # Métricas Globales
     total_b = len(st.session_state.bahias)
     libres_b = sum(1 for b in st.session_state.bahias if b["estado"] == "Libre")
     ocupadas_b = total_b - libres_b
@@ -231,7 +259,6 @@ if menu == "📊 Tablero de Disponibilidad (CU-02)":
 
     st.divider()
 
-    # Filtros
     f_col1, f_col2 = st.columns(2)
     with f_col1:
         f_taller = st.selectbox("Filtrar por Taller", ["Todos", "Taller PV1", "Taller Lote Comercial", "Taller Lote Carguero"])
@@ -244,7 +271,6 @@ if menu == "📊 Tablero de Disponibilidad (CU-02)":
     if f_familia != "Todas":
         bahias_filtradas = [b for b in bahias_filtradas if b["familia"] == f_familia]
 
-    # Cuadrícula
     st.markdown("### Estado Actual de Bahías Físicas")
     cols_bahias = st.columns(3)
     for idx, b in enumerate(bahias_filtradas):
@@ -327,7 +353,8 @@ elif menu == "📌 Asignar Bahía a Equipo (CU-03)":
                         "taller": b_sel["taller"],
                         "usuario": usuario_act["nombre"]
                     })
-
+                    
+                    save_data() # Guardar cambios
                     st.success(f"Equipo {eq_sel['codigo']} asignado exitosamente a la bahía {b_sel['id']}.")
                     st.rerun()
 
@@ -358,22 +385,36 @@ elif menu == "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)":
                 st.markdown(f"**Hora Ingreso:** {b['ingreso'] if b['ingreso'] else '—'}")
             with col_b3:
                 if b["estado"] == "Ocupada":
+                    # CORRECCIÓN UX: Confirmación antes de liberar
                     if st.button(f"Liberar Bahía / Salida", key=f"lib_{b['id']}", type="primary"):
-                        eq_salida = b["equipo"]
-                        b["estado"] = "Libre"
-                        b["equipo"] = None
-                        b["ingreso"] = None
+                        st.session_state[f"confirmar_liberacion_{b['id']}"] = True
+                    
+                    if st.session_state.get(f"confirmar_liberacion_{b['id']}", False):
+                        st.warning("¿Está seguro de liberar esta bahía?")
+                        col_conf1, col_conf2 = st.columns(2)
+                        with col_conf1:
+                            if st.button("Sí, liberar", key=f"si_{b['id']}"):
+                                eq_salida = b["equipo"]
+                                b["estado"] = "Libre"
+                                b["equipo"] = None
+                                b["ingreso"] = None
 
-                        st.session_state.historial.append({
-                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                            "evento": "Salida / Liberación",
-                            "bahia": b["id"],
-                            "equipo": eq_salida,
-                            "taller": b["taller"],
-                            "usuario": usuario_act["nombre"]
-                        })
-                        st.success(f"Bahía {b['id']} liberada y disponible en patio.")
-                        st.rerun()
+                                st.session_state.historial.append({
+                                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                    "evento": "Salida / Liberación",
+                                    "bahia": b["id"],
+                                    "equipo": eq_salida,
+                                    "taller": b["taller"],
+                                    "usuario": usuario_act["nombre"]
+                                })
+                                save_data() # Guardar cambios
+                                st.session_state[f"confirmar_liberacion_{b['id']}"] = False
+                                st.success(f"Bahía {b['id']} liberada y disponible en patio.")
+                                st.rerun()
+                        with col_conf2:
+                            if st.button("Cancelar", key=f"no_{b['id']}"):
+                                st.session_state[f"confirmar_liberacion_{b['id']}"] = False
+                                st.rerun()
                 else:
                     st.caption("Bahía disponible para asignación")
 
@@ -402,6 +443,7 @@ elif menu == "⚠️ Alertas y Umbrales (CU-04 / CU-07)":
             st.session_state.umbrales_alerta["Taller PV1"] = u_pv1
             st.session_state.umbrales_alerta["Taller Lote Comercial"] = u_lc
             st.session_state.umbrales_alerta["Taller Lote Carguero"] = u_lcr
+            save_data() # Guardar cambios
             st.success("Umbrales actualizados exitosamente.")
     else:
         st.info("Solo el Supervisor de Mantenimiento o Administrador pueden configurar umbrales.")
@@ -478,6 +520,7 @@ elif menu == "👥 Gestión de Usuarios (CU-09)":
                         "rol": nuevo_rol,
                         "pass": nuevo_pass
                     }
+                    save_data() # Guardar cambios
                     st.success(f"Usuario {nuevo_user} registrado correctamente.")
                     st.rerun()
             else:
