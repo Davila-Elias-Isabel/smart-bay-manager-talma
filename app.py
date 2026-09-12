@@ -24,16 +24,15 @@ def load_data():
             data = json.load(f)
             st.session_state.bahias = data.get("bahias", st.session_state.bahias)
             st.session_state.equipos_pendientes = data.get("equipos_pendientes", st.session_state.equipos_pendientes)
-            st.session_state.usuarios = data.get("usuarios", st.session_state.usuarios)
             st.session_state.historial = data.get("historial", st.session_state.historial)
             st.session_state.umbrales_alerta = data.get("umbrales_alerta", st.session_state.umbrales_alerta)
+            # NO cargamos usuarios desde el JSON para proteger las credenciales seguras
 
 def save_data():
     """Guarda los datos actuales en el archivo JSON."""
     data = {
         "bahias": st.session_state.bahias,
         "equipos_pendientes": st.session_state.equipos_pendientes,
-        "usuarios": st.session_state.usuarios,
         "historial": st.session_state.historial,
         "umbrales_alerta": st.session_state.umbrales_alerta
     }
@@ -43,7 +42,6 @@ def save_data():
 # -------------------------------------------------------------
 # 1. ESTADO GLOBAL (SESSION STATE)
 # -------------------------------------------------------------
-# NOTA: Las contraseñas ahora se leen de st.secrets (configurado en Streamlit Cloud)
 if "usuarios" not in st.session_state:
     st.session_state.usuarios = {
         "supervisor": {"nombre": "Carlos Mendoza", "rol": "Supervisor de Mantenimiento", "pass": st.secrets["passwords"]["supervisor"]},
@@ -92,7 +90,6 @@ if "historial" not in st.session_state:
         {"timestamp": "2026-09-11 07:45", "evento": "Ingreso Equipo", "bahia": "BAY-LCR-01", "equipo": "CB-305", "taller": "Taller Lote Carguero", "usuario": "Jorge Salinas"}
     ]
 
-# Cargar datos persistentes si existen
 load_data()
 
 # -------------------------------------------------------------
@@ -176,7 +173,7 @@ st.sidebar.markdown("<h3 style='text-align:center; margin-top:-5px;'>Smart Bay M
 if not st.session_state.sesion_activa:
     st.markdown("""
     <div style='background-color:#012b6c; padding:30px; border-radius:10px; margin-bottom:25px;'>
-        <h1 style='color:#ffffff; margin:0;'>🛫 Smart Bay Manager</h1>
+        <h1 style='color:#ffffff; margin:0;'>Smart Bay Manager</h1>
         <p style='color:#7ead3e; font-weight:bold; font-size:1.15rem; margin:8px 0 0 0;'>SISTEMA DE GESTIÓN INTELIGENTE DE BAHÍAS — TALMA SERVICIOS AEROPORTUARIOS</p>
     </div>
     """, unsafe_allow_html=True)
@@ -212,8 +209,8 @@ if not st.session_state.sesion_activa:
 
 # Menú lateral para usuario con sesión activa
 usuario_act = st.session_state.sesion_activa
-st.sidebar.markdown(f"👤 **Usuario:** {usuario_act['nombre']}")
-st.sidebar.markdown(f"💼 **Rol:** `{usuario_act['rol']}`")
+st.sidebar.markdown(f"**Usuario:** {usuario_act['nombre']}")
+st.sidebar.markdown(f"**Rol:** `{usuario_act['rol']}`")
 
 if st.sidebar.button("Cerrar Sesión"):
     st.session_state.sesion_activa = None
@@ -222,18 +219,18 @@ if st.sidebar.button("Cerrar Sesión"):
 st.sidebar.divider()
 menu = st.sidebar.radio(
     "Módulos del Sistema",
-    ["📊 Tablero de Disponibilidad (CU-02)",
-     "📌 Asignar Bahía a Equipo (CU-03)",
-     "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)",
-     "⚠️ Alertas y Umbrales (CU-04 / CU-07)",
-     "📈 Reporte de Ocupación (CU-08)",
-     "👥 Gestión de Usuarios (CU-09)"]
+    ["Tablero de Disponibilidad (CU-02)",
+     "Asignar Bahía a Equipo (CU-03)",
+     "Terminal Operativo de Taller (CU-05 / CU-06)",
+     "Alertas y Umbrales (CU-04 / CU-07)",
+     "Reporte de Ocupación (CU-08)",
+     "Gestión de Usuarios (CU-09)"]
 )
 
 # -------------------------------------------------------------
 # 3. TABLERO DE DISPONIBILIDAD EN TIEMPO REAL (CU-02 / CU-07)
 # -------------------------------------------------------------
-if menu == "📊 Tablero de Disponibilidad (CU-02)":
+if menu == "Tablero de Disponibilidad (CU-02)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Tablero Maestro de Bahías en Tiempo Real</h2>
@@ -244,7 +241,7 @@ if menu == "📊 Tablero de Disponibilidad (CU-02)":
     for taller, umbral in st.session_state.umbrales_alerta.items():
         libres = sum(1 for b in st.session_state.bahias if b["taller"] == taller and b["estado"] == "Libre")
         if libres <= umbral:
-            st.error(f"🚨 **ALERTA CRÍTICA DE CAPACIDAD ({taller.upper()}):** Solo quedan {libres} bahía(s) disponible(s). Umbral fijado: {umbral}.")
+            st.error(f"ALERTA CRÍTICA DE CAPACIDAD ({taller.upper()}): Solo quedan {libres} bahía(s) disponible(s). Umbral fijado: {umbral}.")
 
     total_b = len(st.session_state.bahias)
     libres_b = sum(1 for b in st.session_state.bahias if b["estado"] == "Libre")
@@ -296,7 +293,7 @@ if menu == "📊 Tablero de Disponibilidad (CU-02)":
 # -------------------------------------------------------------
 # 4. ASIGNACIÓN DE BAHÍA A EQUIPO (CU-03)
 # -------------------------------------------------------------
-elif menu == "📌 Asignar Bahía a Equipo (CU-03)":
+elif menu == "Asignar Bahía a Equipo (CU-03)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Asignar Bahía a Equipo GSE</h2>
@@ -305,11 +302,11 @@ elif menu == "📌 Asignar Bahía a Equipo (CU-03)":
     """, unsafe_allow_html=True)
 
     if usuario_act["rol"] not in ["Supervisor de Mantenimiento", "Administrador del Sistema"]:
-        st.warning("⚠️ Acceso reservado exclusivamente para la Supervisión de Mantenimiento.")
+        st.warning("Acceso reservado exclusivamente para la Supervisión de Mantenimiento.")
         st.stop()
 
     if not st.session_state.equipos_pendientes:
-        st.success("✅ No existen equipos GSE pendientes en cola.")
+        st.success("No existen equipos GSE pendientes en cola.")
     else:
         col_as1, col_as2 = st.columns(2)
         with col_as1:
@@ -318,7 +315,7 @@ elif menu == "📌 Asignar Bahía a Equipo (CU-03)":
             seleccion_eq_label = st.selectbox("Seleccione Equipo GSE", list(opciones_eq.keys()))
             eq_sel = opciones_eq[seleccion_eq_label]
 
-            st.info(f"**Regla de Negocio:** El equipo `{eq_sel['codigo']}` requiere una bahía compatible con la familia `{eq_sel['familia']}`.")
+            st.info(f"Regla de Negocio: El equipo `{eq_sel['codigo']}` requiere una bahía compatible con la familia `{eq_sel['familia']}`.")
 
         with col_as2:
             st.subheader("2. Bahía Compatible y Libre")
@@ -354,14 +351,14 @@ elif menu == "📌 Asignar Bahía a Equipo (CU-03)":
                         "usuario": usuario_act["nombre"]
                     })
                     
-                    save_data() # Guardar cambios
+                    save_data()
                     st.success(f"Equipo {eq_sel['codigo']} asignado exitosamente a la bahía {b_sel['id']}.")
                     st.rerun()
 
 # -------------------------------------------------------------
 # 5. TERMINAL OPERATIVO DE TALLER (CU-05 / CU-06)
 # -------------------------------------------------------------
-elif menu == "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)":
+elif menu == "Terminal Operativo de Taller (CU-05 / CU-06)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Terminal de Taller — Registro en Patio</h2>
@@ -406,7 +403,7 @@ elif menu == "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)":
                                     "taller": b["taller"],
                                     "usuario": usuario_act["nombre"]
                                 })
-                                save_data() # Guardar cambios
+                                save_data()
                                 st.session_state[f"confirmar_liberacion_{b['id']}"] = False
                                 st.success(f"Bahía {b['id']} liberada y disponible en patio.")
                                 st.rerun()
@@ -420,7 +417,7 @@ elif menu == "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)":
 # -------------------------------------------------------------
 # 6. CONFIGURACIÓN DE UMBRALES Y ALERTAS (CU-04 / CU-07)
 # -------------------------------------------------------------
-elif menu == "⚠️ Alertas y Umbrales (CU-04 / CU-07)":
+elif menu == "Alertas y Umbrales (CU-04 / CU-07)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Gestión de Alertas de Capacidad Crítica</h2>
@@ -442,7 +439,7 @@ elif menu == "⚠️ Alertas y Umbrales (CU-04 / CU-07)":
             st.session_state.umbrales_alerta["Taller PV1"] = u_pv1
             st.session_state.umbrales_alerta["Taller Lote Comercial"] = u_lc
             st.session_state.umbrales_alerta["Taller Lote Carguero"] = u_lcr
-            save_data() # Guardar cambios
+            save_data()
             st.success("Umbrales actualizados exitosamente.")
     else:
         st.info("Solo el Supervisor de Mantenimiento o Administrador pueden configurar umbrales.")
@@ -453,14 +450,14 @@ elif menu == "⚠️ Alertas y Umbrales (CU-04 / CU-07)":
         libres = sum(1 for b in st.session_state.bahias if b["taller"] == taller and b["estado"] == "Libre")
         total = sum(1 for b in st.session_state.bahias if b["taller"] == taller)
         if libres <= umbral:
-            st.error(f"🚨 **ALERTA CRÍTICA EN {taller.upper()}** — Bahías libres: {libres}/{total} (Umbral: <= {umbral})")
+            st.error(f"ALERTA CRÍTICA EN {taller.upper()} — Bahías libres: {libres}/{total} (Umbral: <= {umbral})")
         else:
-            st.success(f"✅ **{taller}:** Capacidad adecuada ({libres}/{total} bahías libres)")
+            st.success(f"{taller}: Capacidad adecuada ({libres}/{total} bahías libres)")
 
 # -------------------------------------------------------------
 # 7. REPORTE HISTÓRICO DE OCUPACIÓN (CU-08)
 # -------------------------------------------------------------
-elif menu == "📈 Reporte de Ocupación (CU-08)":
+elif menu == "Reporte de Ocupación (CU-08)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Reporte Histórico de Ocupación de Bahías</h2>
@@ -473,7 +470,7 @@ elif menu == "📈 Reporte de Ocupación (CU-08)":
 
     csv_data = df_hist.to_csv(index=False).encode("utf-8")
     st.download_button(
-        label="📥 Descargar Reporte (.CSV)",
+        label="Descargar Reporte (.CSV)",
         data=csv_data,
         file_name="reporte_ocupacion_talma_smartbay.csv",
         mime="text/csv",
@@ -483,7 +480,7 @@ elif menu == "📈 Reporte de Ocupación (CU-08)":
 # -------------------------------------------------------------
 # 8. GESTIÓN DE USUARIOS Y ROLES (CU-09)
 # -------------------------------------------------------------
-elif menu == "👥 Gestión de Usuarios (CU-09)":
+elif menu == "Gestión de Usuarios (CU-09)":
     st.markdown("""
     <div style='border-left: 6px solid #012b6c; padding-left: 15px; margin-bottom: 20px;'>
         <h2 style='margin:0; color:#012b6c;'>Gestión de Usuarios y Roles de Acceso</h2>
@@ -492,7 +489,7 @@ elif menu == "👥 Gestión de Usuarios (CU-09)":
     """, unsafe_allow_html=True)
 
     if usuario_act["rol"] != "Administrador del Sistema":
-        st.warning("⚠️ Acceso restringido exclusivamente para el Administrador del Sistema.")
+        st.warning("Acceso restringido exclusivamente para el Administrador del Sistema.")
         st.stop()
 
     col_u1, col_u2 = st.columns([1, 1])
@@ -519,7 +516,7 @@ elif menu == "👥 Gestión de Usuarios (CU-09)":
                         "rol": nuevo_rol,
                         "pass": nuevo_pass
                     }
-                    save_data() # Guardar cambios
+                    save_data()
                     st.success(f"Usuario {nuevo_user} registrado correctamente.")
                     st.rerun()
             else:
