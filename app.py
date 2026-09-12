@@ -530,3 +530,5 @@ elif menu == "👥 Gestión de Usuarios (CU-09)":
         st.subheader("Usuarios Activos en el Sistema")
         tabla_users = [{"Usuario": k, "Nombre": v["nombre"], "Rol": v["rol"]} for k, v in st.session_state.usuarios.items()]
         st.table(pd.DataFrame(tabla_users))
+
+
