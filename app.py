@@ -45,11 +45,11 @@ def save_data():
 # -------------------------------------------------------------
 if "usuarios" not in st.session_state:
     st.session_state.usuarios = {
-        "supervisor": {"nombre": "Carlos Mendoza", "rol": "Supervisor de Mantenimiento", "pass": "sup123"},
-        "planificador": {"nombre": "Ana Ramos", "rol": "Planificador CCO", "pass": "plan123"},
-        "tecnico": {"nombre": "Jorge Salinas", "rol": "Técnico de Mantenimiento", "pass": "tec123"},
-        "coordinador": {"nombre": "Luis Paredes", "rol": "Coordinador CCO Operaciones", "pass": "coord123"},
-        "admin": {"nombre": "Admin General", "rol": "Administrador del Sistema", "pass": "admin123"}
+        "supervisor": {"nombre": "Carlos Mendoza", "rol": "Supervisor de Mantenimiento", "pass": "TalmaSup2026!"},
+        "planificador": {"nombre": "Ana Ramos", "rol": "Planificador CCO", "pass": "TalmaPlan2026!"},
+        "tecnico": {"nombre": "Jorge Salinas", "rol": "Técnico de Mantenimiento", "pass": "TalmaTec2026!"},
+        "coordinador": {"nombre": "Luis Paredes", "rol": "Coordinador CCO Operaciones", "pass": "TalmaCoord2026!"},
+        "admin": {"nombre": "Admin General", "rol": "Administrador del Sistema", "pass": "TalmaAdmin2026!"}
     }
 
 if "sesion_activa" not in st.session_state:
