@@ -43,13 +43,14 @@ def save_data():
 # -------------------------------------------------------------
 # 1. ESTADO GLOBAL (SESSION STATE)
 # -------------------------------------------------------------
+# NOTA: Las contraseñas ahora se leen de st.secrets (configurado en Streamlit Cloud)
 if "usuarios" not in st.session_state:
     st.session_state.usuarios = {
-        "supervisor": {"nombre": "Carlos Mendoza", "rol": "Supervisor de Mantenimiento", "pass": "TalmaSup2026!"},
-        "planificador": {"nombre": "Ana Ramos", "rol": "Planificador CCO", "pass": "TalmaPlan2026!"},
-        "tecnico": {"nombre": "Jorge Salinas", "rol": "Técnico de Mantenimiento", "pass": "TalmaTec2026!"},
-        "coordinador": {"nombre": "Luis Paredes", "rol": "Coordinador CCO Operaciones", "pass": "TalmaCoord2026!"},
-        "admin": {"nombre": "Admin General", "rol": "Administrador del Sistema", "pass": "TalmaAdmin2026!"}
+        "supervisor": {"nombre": "Carlos Mendoza", "rol": "Supervisor de Mantenimiento", "pass": st.secrets["passwords"]["supervisor"]},
+        "planificador": {"nombre": "Ana Ramos", "rol": "Planificador CCO", "pass": st.secrets["passwords"]["planificador"]},
+        "tecnico": {"nombre": "Jorge Salinas", "rol": "Técnico de Mantenimiento", "pass": st.secrets["passwords"]["tecnico"]},
+        "coordinador": {"nombre": "Luis Paredes", "rol": "Coordinador CCO Operaciones", "pass": st.secrets["passwords"]["coordinador"]},
+        "admin": {"nombre": "Admin General", "rol": "Administrador del Sistema", "pass": st.secrets["passwords"]["admin"]}
     }
 
 if "sesion_activa" not in st.session_state:
@@ -185,7 +186,6 @@ if not st.session_state.sesion_activa:
         st.subheader("Acceso al Sistema (CU-01)")
         username = st.selectbox("Seleccione Usuario para Demostración", list(st.session_state.usuarios.keys()))
         
-        # CORRECCIÓN DE SEGURIDAD: No pre-llenar la contraseña
         password = st.text_input("Contraseña", type="password")
         
         if st.button("Iniciar Sesión", type="primary", use_container_width=True):
@@ -385,7 +385,6 @@ elif menu == "🛠️ Terminal Operativo de Taller (CU-05 / CU-06)":
                 st.markdown(f"**Hora Ingreso:** {b['ingreso'] if b['ingreso'] else '—'}")
             with col_b3:
                 if b["estado"] == "Ocupada":
-                    # CORRECCIÓN UX: Confirmación antes de liberar
                     if st.button(f"Liberar Bahía / Salida", key=f"lib_{b['id']}", type="primary"):
                         st.session_state[f"confirmar_liberacion_{b['id']}"] = True
                     
