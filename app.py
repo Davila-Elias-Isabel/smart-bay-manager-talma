@@ -140,39 +140,52 @@ def servicio_liberar_bahia(bahia_id, usuario):
 def cargar_estilos():
     st.markdown("""
     <style>
+        /* --- SIDEBAR AZUL OSCURO (Como el prototipo original) --- */
+        [data-testid="stSidebar"] {
+            background-color: #012b6c !important;
+        }
+        [data-testid="stSidebar"] * {
+            color: #ffffff !important;
+        }
+        [data-testid="stSidebar"] .stRadio label {
+            color: #f1f5f9 !important;
+            font-weight: 500;
+        }
+        [data-testid="stSidebar"] .stMarkdown h3 {
+            color: #ffffff !important;
+        }
+
+        /* --- BOTONES VERDES --- */
+        div.stButton > button[kind="primary"] {
+            background-color: #7ead3e !important;
+            border-color: #7ead3e !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border-radius: 4px;
+        }
+        div.stButton > button[kind="primary"]:hover {
+            background-color: #6c9934 !important;
+            border-color: #6c9934 !important;
+        }
+
+        /* --- TÍTULOS CENTRADOS --- */
         .main-title {
             text-align: center;
             color: #012b6c;
             font-weight: 700;
             margin-bottom: 25px;
         }
-        .prototype-header {
-            background-color: #012b6c;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 4px 4px 0 0;
-            font-weight: 600;
-            margin-bottom: 0;
-        }
-        .prototype-body {
-            border: 1px solid #e2e8f0;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            padding: 20px;
-            background-color: #ffffff;
-        }
+
+        /* --- TEXTO DE ALERTA --- */
         .alert-text {
             color: #dc2626;
             font-weight: 600;
             font-size: 0.9rem;
         }
-        div.stButton > button {
-            border-radius: 4px;
-            font-weight: 600;
-        }
     </style>
     """, unsafe_allow_html=True)
 
+# Logo restaurado con texto blanco para que contraste con el sidebar azul
 LOGO_TALMA_HTML = """
 <div style="text-align: center; padding: 15px 0 10px 0;">
     <svg width="220" height="75" viewBox="0 0 320 110" fill="none" xmlns="http://www.w3.org/2000/svg">
