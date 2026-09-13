@@ -1,110 +1,132 @@
-# Smart Bay Manager — Gestión Inteligente de Bahías GSE
+# Smart Bay Manager — Sistema de Gestión Inteligente de Bahías GSE
 
-> Asignación, monitoreo en tiempo real y trazabilidad operativa de bahías de mantenimiento Ground Support Equipment (GSE) para Talma Servicios Aeroportuarios S.A.
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/)
+> Solución integral para la asignación, monitoreo en tiempo real y trazabilidad operativa de bahías de mantenimiento de equipos Ground Support Equipment (GSE) en Talma Servicios Aeroportuarios S.A.
 
 ---
 
-## 📌 Problemática y Solución
+## Contexto y Problemática
 
-El mantenimiento preventivo y correctivo en los talleres **PV1**, **Lote Comercial** y **Lote Carguero** dependía de registros manuales y hojas de cálculo dispersas. Esto generaba demoras operativas, estados inconsistentes y falta de alertas ante saturación de capacidad.
+En las operaciones aeroportuarias de Talma, el mantenimiento preventivo y correctivo de los equipos de apoyo terrestre (GSE) se distribuye en tres talleres especializados: Taller PV1, Taller Lote Comercial y Taller Lote Carguero.
 
-**Smart Bay Manager** centraliza la gobernanza del patio de mantenimiento mediante un panel de control con validación estricta de compatibilidad, cálculo dinámico de ocupación y alertas automáticas de saturación en rampa.
+Históricamente, el seguimiento de la ocupación y disponibilidad de las bahías físicas se gestionaba mediante hojas de cálculo independientes y control manual. Esto ocasionaba demoras en la derivación de equipos, registros duplicados e inconsistentes sobre el estado de cada espacio, y falta de anticipación ante situaciones de saturación en la capacidad de los talleres.
 
----
-
-## 🛠️ Stack Tecnológico
-
-* **Lenguaje:** Python 3.10+
-* **Framework Web:** Streamlit
-* **Procesamiento de Datos:** Pandas
-* **Diseño / UI:** Paleta corporativa de Talma (`#012b6c` / `#7ead3e`) con renderizado SVG
-* **Despliegue:** Streamlit Community Cloud (CI/CD vía GitHub)
+**Smart Bay Manager** automatiza la gobernanza operativa del patio de mantenimiento mediante un panel de control interactivo con validación estricta de reglas de negocio y trazabilidad en tiempo real.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
-Implementación modular en capas dentro de `app.py`:
+El proyecto está implementado siguiendo una **arquitectura en capas**, lo que permite separar responsabilidades y facilitar el mantenimiento y la escalabilidad.
 
-| Capa | Responsabilidad | Funciones Clave |
+| Capa | Responsabilidad | Implementación en `app.py` |
 | :--- | :--- | :--- |
-| **Persistencia** | Entrada/salida y persistencia de datos | `load_data()`, `save_data()` |
-| **Lógica de Negocio** | Validaciones, cálculos y reglas operativas | `validar_asignacion()`, `calcular_ocupacion()`, `evaluar_alerta_capacidad()` |
-| **Servicios** | Orquestación de casos de uso | `servicio_asignar_bahia()`, `servicio_liberar_bahia()` |
-| **Presentación (UI)** | Vistas y paneles interactivos en Streamlit | `pantalla_login()`, `pantalla_panel_disponibilidad()` |
-| **Enrutador** | Control de acceso y navegación por roles | `main()` |
+| **Datos / Persistencia** | Carga y guardado de información | `load_data()`, `save_data()` |
+| **Dominio / Lógica de Negocio** | Reglas de negocio y cálculos | `validar_asignacion()`, `calcular_ocupacion()`, `evaluar_alerta_capacidad()` |
+| **Aplicación / Servicios** | Orquestación de casos de uso | `servicio_asignar_bahia()`, `servicio_liberar_bahia()` |
+| **Presentación (UI)** | Interfaz de usuario en Streamlit | `pantalla_login()`, `pantalla_panel_disponibilidad()`, etc. |
+| **Enrutador Principal** | Autenticación y navegación | `main()` |
 
 ---
 
-## ⚙️ Reglas de Negocio Clave
+## Casos de Uso Implementados
 
-* **Compatibilidad Estructural:** Restricción estricta por familia de equipo:
-  * `PM`: Plataformas Móviles
-  * `LO`: Loaders de Carga
-  * `CA/CB`: Fajas y Cintas Transportadoras
-  * `TR`: Tractores de Remolque
-* **Transición de Estado:** La asignación únicamente procede si la bahía está **Libre** y coincide con la familia técnica del equipo.
-* **Alertas Tempranas:** Notificación crítica automática cuando las bahías libres del taller sean menores o iguales al umbral configurado.
-* **Cálculo de Ocupación:** 
-  $$\text{Ocupación (\%)} = \left( \frac{\text{Bahías Ocupadas}}{\text{Total Bahías del Taller}} \right) \times 100$$
-
----
-
-## 📋 Casos de Uso (RBAC)
-
-| Código | Caso de Uso | Roles con Acceso |
-| :---: | :--- | :--- |
-| **CU-01** | Inicio de sesión seguro | Todos los roles |
-| **CU-02** | Consulta de disponibilidad en tiempo real | Planificador CCO, Supervisor |
-| **CU-03** | Asignación con validación de compatibilidad | Supervisor de Mantenimiento |
-| **CU-04** | Configuración de umbrales de saturación | Supervisor de Mantenimiento |
-| **CU-05** | Registro de ingreso físico a bahía | Técnico de Mantenimiento |
-| **CU-06** | Registro de salida y liberación de bahía | Técnico de Mantenimiento |
-| **CU-07** | Monitoreo de alertas tempranas de capacidad | Planificador CCO, Supervisor, Coordinador |
-| **CU-08** | Exportación de reportería histórica (`.csv`) | Planificador CCO, Coordinador |
-| **CU-09** | Gestión de usuarios y permisos | Administrador del Sistema |
+| Código | Caso de Uso | Roles con Acceso | Estado |
+| :--- | :--- | :--- | :--- |
+| CU-01 | Inicio de sesión seguro | Todos los roles | ✅ Implementado |
+| CU-02 | Consulta de disponibilidad en tiempo real | Planificador CCO, Supervisor | ✅ Implementado |
+| CU-03 | Asignación con validación de compatibilidad | Supervisor de Mantenimiento | ✅ Implementado |
+| CU-04 | Configuración de umbrales de saturación | Supervisor de Mantenimiento | ✅ Implementado |
+| CU-05 | Registro de ingreso físico a bahía | Técnico de Mantenimiento | ✅ Implementado |
+| CU-06 | Registro de salida y liberación de bahía | Técnico de Mantenimiento | ✅ Implementado |
+| CU-07 | Monitoreo de alertas tempranas de capacidad | Planificador CCO, Supervisor, Coordinador | ✅ Implementado |
+| CU-08 | Exportación de reporte histórico (.csv) | Planificador CCO, Coordinador | ✅ Implementado |
+| CU-09 | Gestión de usuarios y permisos | Administrador del Sistema | ✅ Implementado |
 
 ---
 
-## 📂 Estructura del Repositorio
+## Reglas de Negocio Incorporadas
 
-```text
-smart-bay-manager-talma/
-├── .streamlit/
-│   └── config.toml      # Configuración visual y paleta oficial
-├── app.py               # Aplicación completa: capas de negocio + UI
-├── requirements.txt     # Dependencias de ejecución
-└── README.md
+1. **Restricción Estructural de Familias:** Cada bahía física admite de manera exclusiva una familia de equipo compatible: PM (Plataformas Móviles), LO (Loaders de Carga), CA/CB (Fajas y Cintas Transportadoras), TR (Tractores de Remolque).
 
+2. **Restricción de Operación:** Asignar un equipo a una bahía termina exitosamente únicamente si la bahía se encuentra en estado **Libre** y su familia es **compatible** con la del equipo a ingresar.
 
-Seguridad: Las credenciales de acceso se gestionan de forma aislada mediante st.secrets (secrets.toml en local o secrets en Streamlit Cloud), evitando su exposición en el repositorio.
+3. **Regla de Estímulo y Respuesta (Alerta de Capacidad):** Cuando el total de bahías libres de un taller sea menor o igual al umbral fijado, el sistema dispara automáticamente una alerta crítica.
 
-👥 Equipo y Créditos
-Universidad San Ignacio de Loyola — 2026
+4. **Regla de Cálculo de Ocupación:** El porcentaje de ocupación se calcula como (Bahías Ocupadas / Total de Bahías del Taller) * 100.
 
-Carrera: Ingeniería Empresarial y de Sistemas
+---
 
-Jose Alexander Rojas Gutierrez
+## Estructura del Repositorio
 
-Rocio Isabel Davila Elias
+La estructura del proyecto es la siguiente:
 
-Jose Christofer Arown Miranda Gallegos
+- **.streamlit/config.toml** — Configuración de tema visual y paleta oficial.
+- **app.py** — Aplicación completa: arquitectura en capas + UI.
+- **requirements.txt** — Dependencias de ejecución en la nube.
+- **README.md** — Documentación técnica del proyecto.
 
-Johaira Kihara Cabello Manrique
+**Nota:** Las credenciales de los usuarios se cargan de forma segura desde `st.secrets` (archivo `secrets.toml` local o configuración en Streamlit Cloud), por lo que **no están expuestas en el repositorio**.
 
-Ruth Noelia Huarhuache Sanchez
+---
 
-Desarrollo y Despliegue:
+## Interfaz de Usuario
 
-Implementación web en Streamlit, arquitectura modular, diseño UI y puesta en producción a cargo de Rocio Isabel Davila Elias.
+La interfaz fue diseñada siguiendo los **prototipos navegables de la Figura 18** del Producto Acreditable:
 
-📚 Referencias Bibliográficas
-Jacobson, I., Booch, G., & Rumbaugh, J. (1999). The Unified Software Development Process. Addison-Wesley.
+- **Login:** Campos de usuario y contraseña centrados.
+- **Panel de Disponibilidad:** Filtros por taller y familia, tabla con estado de bahías.
+- **Asignar Bahía:** Selector de equipo, tabla de bahías compatibles y libres.
+- **Registro de Ingreso / Salida:** Búsqueda por código de equipo, botones de acción.
+- **Alertas y Umbrales:** Tabla de alertas, configuración de umbrales.
+- **Reporte de Ocupación:** Filtros por taller y fecha, exportación a CSV.
+- **Gestión de Usuarios:** Tabla de usuarios y roles, formulario de creación.
 
-Kruchten, P. (2003). The Rational Unified Process: An Introduction (3.ª ed.). Addison-Wesley.
+---
 
-Larman, C. (2004). Applying UML and Patterns (3.ª ed.). Prentice Hall.
+## Stack Tecnológico
 
-Object Management Group. (2017). Unified Modeling Language (UML) Specification, Version 2.5.1.
+- **Lenguaje:** Python 3.10+
+- **Framework Web:** Streamlit
+- **Procesamiento de Datos:** Pandas
+- **Identidad Visual:** Paleta corporativa oficial de Talma (#012b6c Azul y #7ead3e Verde) con renderizado vectorial SVG nativo
+- **Despliegue:** Streamlit Community Cloud (sincronizado mediante integración continua con GitHub)
+
+---
+
+## Enlace de Acceso
+
+[https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/](https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/)
+
+---
+
+## Integrantes del Proyecto
+
+| Nombre | Carrera |
+| :--- | :--- |
+| Jose Alexander Rojas Gutierrez | Ingeniería Empresarial y de Sistemas |
+| Rocio Isabel Davila Elias | Ingeniería Empresarial y de Sistemas |
+| Jose Christofer Arown Miranda Gallegos | Ingeniería Empresarial y de Sistemas |
+| Johaira Kihara Cabello Manrique | Ingeniería Empresarial y de Sistemas |
+| Ruth Noelia Huarhuache Sanchez | Ingeniería Empresarial y de Sistemas |
+
+**Universidad San Ignacio de Loyola**
+Lima — Perú, 2026
+
+---
+
+## Autoría de la Página Web
+
+> La implementación de la aplicación web en Streamlit, el diseño de la interfaz alineada a los prototipos navegables (Figura 18), la refactorización del código en capas y el despliegue en Streamlit Community Cloud fueron realizados por:
+>
+> **Rocio Isabel Davila Elias**
+> Carrera: Ingeniería Empresarial y de Sistemas
+> Universidad San Ignacio de Loyola
+
+---
+
+## Referencias Bibliográficas
+
+- Jacobson, I., Booch, G., & Rumbaugh, J. (1999). *The Unified Software Development Process*. Addison-Wesley.
+- Kruchten, P. (2003). *The Rational Unified Process: An Introduction* (3.a ed.). Addison-Wesley.
+- Object Management Group. (2017). *Unified Modeling Language (UML) Specification, Version 2.5.1*.
+- Larman, C. (2004). *Applying UML and Patterns* (3.a ed.). Prentice Hall.
