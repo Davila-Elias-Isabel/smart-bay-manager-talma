@@ -114,7 +114,7 @@ Lima — Perú, 2026
 
 ## Autoría de la Página Web
 
-> La implementación de la aplicación web en Streamlit, el diseño de la interfaz alineada a los prototipos navegables (Figura 18), la refactorización del código en capas y el despliegue en Streamlit Community Cloud fueron realizados por:
+> La implementación de la aplicación web en Streamlit, el diseño de la interfaz alineada a los prototipos navegables, la refactorización del código en capas y el despliegue en Streamlit Community Cloud fueron realizados por:
 >
 > **Rocio Isabel Davila Elias**
 > Carrera: Ingeniería Empresarial y de Sistemas
