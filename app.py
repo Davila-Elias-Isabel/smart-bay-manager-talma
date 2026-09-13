@@ -547,4 +547,29 @@ def main():
     load_data()
 
     st.sidebar.markdown(LOGO_TALMA_HTML, unsafe_allow_html=True)
-    st.sidebar.markdown("<h3 style='text-align:center; margin
+    st.sidebar.markdown("<h3 style='text-align:center; margin-top:-5px;'>Smart Bay Manager</h3>", unsafe_allow_html=True)
+
+    if not st.session_state.sesion_activa:
+        pantalla_login()
+        st.stop()
+
+    usuario_act = st.session_state.sesion_activa
+    st.sidebar.markdown(f"**Usuario:** {usuario_act['nombre']}")
+    st.sidebar.markdown(f"**Rol:** `{usuario_act['rol']}`")
+
+    if st.sidebar.button("Cerrar Sesión"):
+        st.session_state.sesion_activa = None
+        st.rerun()
+
+    st.sidebar.divider()
+    menu = st.sidebar.radio(
+        "Módulos del Sistema",
+        ["Tablero de Disponibilidad (CU-02)",
+         "Asignar Bahía a Equipo (CU-03)",
+         "Terminal Operativo de Taller (CU-05 / CU-06)",
+         "Alertas y Umbrales (CU-04 / CU-07)",
+         "Reporte de Ocupación (CU-08)",
+         "Gestión de Usuarios (CU-09)"]
+    )
+
+    if menu == "Tablero de
