@@ -1,80 +1,110 @@
-# Smart Bay Manager — Sistema de Gestión Inteligente de Bahías GSE
+# Smart Bay Manager — Gestión Inteligente de Bahías GSE
 
-> Solución integral para la asignación, monitoreo en tiempo real y trazabilidad operativa de bahías de mantenimiento de equipos Ground Support Equipment (GSE) en Talma Servicios Aeroportuarios S.A.
+> Asignación, monitoreo en tiempo real y trazabilidad operativa de bahías de mantenimiento Ground Support Equipment (GSE) para Talma Servicios Aeroportuarios S.A.
 
----
-
-## Contexto y Problemática
-
-En las operaciones aeroportuarias de Talma, el mantenimiento preventivo y correctivo de los equipos de apoyo terrestre (GSE) se distribuye en tres talleres especializados:
-- Taller PV1
-- Taller Lote Comercial
-- Taller Lote Carguero
-
-Históricamente, el seguimiento de la ocupación y disponibilidad de las bahías físicas se gestionaba mediante hojas de cálculo independientes y control manual. Esto ocasionaba demoras en la derivación de equipos, registros duplicados e inconsistentes sobre el estado de cada espacio, y falta de anticipación ante situaciones de saturación en la capacidad de los talleres.
-
-Smart Bay Manager automatiza la gobernanza operativa del patio de mantenimiento mediante un panel de control interactivo con validación estricta de reglas de negocio y trazabilidad en tiempo real.
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/)
 
 ---
 
-## Arquitectura y Casos de Uso del Sistema
+## 📌 Problemática y Solución
 
-El sistema implementa de forma íntegra los requerimientos funcionales derivados del análisis RUP y UML:
+El mantenimiento preventivo y correctivo en los talleres **PV1**, **Lote Comercial** y **Lote Carguero** dependía de registros manuales y hojas de cálculo dispersas. Esto generaba demoras operativas, estados inconsistentes y falta de alertas ante saturación de capacidad.
 
-| Código | Caso de Uso | Rol Autorizado |
+**Smart Bay Manager** centraliza la gobernanza del patio de mantenimiento mediante un panel de control con validación estricta de compatibilidad, cálculo dinámico de ocupación y alertas automáticas de saturación en rampa.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+* **Lenguaje:** Python 3.10+
+* **Framework Web:** Streamlit
+* **Procesamiento de Datos:** Pandas
+* **Diseño / UI:** Paleta corporativa de Talma (`#012b6c` / `#7ead3e`) con renderizado SVG
+* **Despliegue:** Streamlit Community Cloud (CI/CD vía GitHub)
+
+---
+
+## 🏗️ Arquitectura del Sistema
+
+Implementación modular en capas dentro de `app.py`:
+
+| Capa | Responsabilidad | Funciones Clave |
 | :--- | :--- | :--- |
-| CU-01 | Iniciar Sesión (Control de Acceso basado en Roles) | Planificador CCO, Supervisor, Técnico, Coordinador CCO, Administrador |
-| CU-02 | Consultar Disponibilidad de Bahías en Tiempo Real | Planificador CCO, Supervisor de Mantenimiento |
-| CU-03 | Asignar Bahía a Equipo (con validación de compatibilidad) | Supervisor de Mantenimiento |
-| CU-04 | Configurar Umbral de Alerta de Capacidad | Supervisor de Mantenimiento |
-| CU-05 | Registrar Ingreso Físico de Equipo en Bahía | Técnico de Mantenimiento |
-| CU-06 | Registrar Salida de Equipo / Liberar Bahía | Técnico de Mantenimiento |
-| CU-07 | Visualizar Alertas Tempranas de Saturación | Planificador CCO, Supervisor, Coordinador CCO |
-| CU-08 | Generar Reporte Histórico de Ocupación (.CSV) | Planificador CCO, Coordinador CCO Operaciones |
-| CU-09 | Gestionar Usuarios y Roles del Sistema | Administrador del Sistema |
+| **Persistencia** | Entrada/salida y persistencia de datos | `load_data()`, `save_data()` |
+| **Lógica de Negocio** | Validaciones, cálculos y reglas operativas | `validar_asignacion()`, `calcular_ocupacion()`, `evaluar_alerta_capacidad()` |
+| **Servicios** | Orquestación de casos de uso | `servicio_asignar_bahia()`, `servicio_liberar_bahia()` |
+| **Presentación (UI)** | Vistas y paneles interactivos en Streamlit | `pantalla_login()`, `pantalla_panel_disponibilidad()` |
+| **Enrutador** | Control de acceso y navegación por roles | `main()` |
 
 ---
 
-## Reglas de Negocio Incorporadas
+## ⚙️ Reglas de Negocio Clave
 
-1. Restricción Estructural de Familias: Cada bahía física admite de manera exclusiva una familia de equipo compatible:
-   - PM: Plataformas Móviles
-   - LO: Loaders de Carga
-   - CA/CB: Fajas y Cintas Transportadoras
-   - TR: Tractores de Remolque
-2. Restricción de Operación: Asignar un equipo a una bahía termina exitosamente únicamente si la bahía se encuentra en estado Libre y su familia es compatible con la del equipo a ingresar.
-3. Regla de Estímulo y Respuesta (Alerta de Capacidad): Cuando el total de bahías libres de un taller sea menor o igual al umbral fijado, el sistema dispara automáticamente una alerta crítica para prevenir demoras en la operación de rampa.
-4. Regla de Cálculo de Ocupación: El porcentaje de ocupación se calcula dividiendo el total de bahías ocupadas entre el total de bahías del taller y multiplicándolo por cien.
-
----
-
-## Stack Tecnológico
-
-- Lenguaje: Python 3.10+
-- Framework Web: Streamlit
-- Procesamiento de Datos: Pandas
-- Identidad Visual: Paleta corporativa oficial de Talma (#012b6c Azul y #7ead3e Verde) con renderizado vectorial SVG nativo
-- Despliegue: Streamlit Community Cloud (sincronizado mediante integración continua con GitHub)
+* **Compatibilidad Estructural:** Restricción estricta por familia de equipo:
+  * `PM`: Plataformas Móviles
+  * `LO`: Loaders de Carga
+  * `CA/CB`: Fajas y Cintas Transportadoras
+  * `TR`: Tractores de Remolque
+* **Transición de Estado:** La asignación únicamente procede si la bahía está **Libre** y coincide con la familia técnica del equipo.
+* **Alertas Tempranas:** Notificación crítica automática cuando las bahías libres del taller sean menores o iguales al umbral configurado.
+* **Cálculo de Ocupación:** 
+  $$\text{Ocupación (\%)} = \left( \frac{\text{Bahías Ocupadas}}{\text{Total Bahías del Taller}} \right) \times 100$$
 
 ---
 
+## 📋 Casos de Uso (RBAC)
 
-🔗 Enlace de Acceso
-(https://davila-elias-isabel-smart-bay-manager-talma-app-cmisgb.streamlit.app/)
+| Código | Caso de Uso | Roles con Acceso |
+| :---: | :--- | :--- |
+| **CU-01** | Inicio de sesión seguro | Todos los roles |
+| **CU-02** | Consulta de disponibilidad en tiempo real | Planificador CCO, Supervisor |
+| **CU-03** | Asignación con validación de compatibilidad | Supervisor de Mantenimiento |
+| **CU-04** | Configuración de umbrales de saturación | Supervisor de Mantenimiento |
+| **CU-05** | Registro de ingreso físico a bahía | Técnico de Mantenimiento |
+| **CU-06** | Registro de salida y liberación de bahía | Técnico de Mantenimiento |
+| **CU-07** | Monitoreo de alertas tempranas de capacidad | Planificador CCO, Supervisor, Coordinador |
+| **CU-08** | Exportación de reportería histórica (`.csv`) | Planificador CCO, Coordinador |
+| **CU-09** | Gestión de usuarios y permisos | Administrador del Sistema |
 
+---
 
-
-## Estructura del Repositorio
+## 📂 Estructura del Repositorio
 
 ```text
-smart-bay-manager/
+smart-bay-manager-talma/
 ├── .streamlit/
-│   └── config.toml      # Configuración de tema visual y paleta oficial
-├── app.py               # Lógica de negocio, interfaz interactiva y estado global
-├── requirements.txt     # Dependencias de ejecución en la nube
-└── README.md            # Documentación técnica del proyecto
+│   └── config.toml      # Configuración visual y paleta oficial
+├── app.py               # Aplicación completa: capas de negocio + UI
+├── requirements.txt     # Dependencias de ejecución
+└── README.md
 
 
-Autor de Prototipo:
+Seguridad: Las credenciales de acceso se gestionan de forma aislada mediante st.secrets (secrets.toml en local o secrets en Streamlit Cloud), evitando su exposición en el repositorio.
+
+👥 Equipo y Créditos
+Universidad San Ignacio de Loyola — 2026
+
+Carrera: Ingeniería Empresarial y de Sistemas
+
+Jose Alexander Rojas Gutierrez
 
 Rocio Isabel Davila Elias
+
+Jose Christofer Arown Miranda Gallegos
+
+Johaira Kihara Cabello Manrique
+
+Ruth Noelia Huarhuache Sanchez
+
+Desarrollo y Despliegue:
+
+Implementación web en Streamlit, arquitectura modular, diseño UI y puesta en producción a cargo de Rocio Isabel Davila Elias.
+
+📚 Referencias Bibliográficas
+Jacobson, I., Booch, G., & Rumbaugh, J. (1999). The Unified Software Development Process. Addison-Wesley.
+
+Kruchten, P. (2003). The Rational Unified Process: An Introduction (3.ª ed.). Addison-Wesley.
+
+Larman, C. (2004). Applying UML and Patterns (3.ª ed.). Prentice Hall.
+
+Object Management Group. (2017). Unified Modeling Language (UML) Specification, Version 2.5.1.
