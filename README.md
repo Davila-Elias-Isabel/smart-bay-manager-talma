@@ -58,8 +58,6 @@ El proyecto está implementado siguiendo una **arquitectura en capas**, lo que p
 
 ## Estructura del Repositorio
 
-La estructura del proyecto es la siguiente:
-
 - **.streamlit/config.toml** — Configuración de tema visual y paleta oficial.
 - **app.py** — Aplicación completa: arquitectura en capas + UI.
 - **requirements.txt** — Dependencias de ejecución en la nube.
