@@ -154,6 +154,9 @@ def cargar_estilos():
         [data-testid="stSidebar"] .stMarkdown h3 {
             color: #ffffff !important;
         }
+        [data-testid="stSidebar"] .stMarkdown p {
+            color: #ffffff !important;
+        }
 
         /* --- BOTONES VERDES --- */
         div.stButton > button[kind="primary"] {
@@ -485,9 +488,12 @@ def main():
 
     usuario_act = st.session_state.sesion_activa
     st.sidebar.markdown(f"**Usuario:** {usuario_act['nombre']}")
-    st.sidebar.markdown(f"**Rol:** `{usuario_act['rol']}`")
+    st.sidebar.markdown(
+        f"<p style='color: #ffffff;'><b>Rol:</b> <span style='color: #7ead3e; font-weight: bold;'>{usuario_act['rol']}</span></p>",
+        unsafe_allow_html=True
+    )
 
-    if st.sidebar.button("Cerrar Sesión"):
+    if st.sidebar.button("Cerrar Sesión", type="primary", use_container_width=True):
         st.session_state.sesion_activa = None
         st.rerun()
 
